@@ -663,3 +663,55 @@ select.form-input option { background: var(--bg-2); }
   text-align: center; width: 90%; max-width: 320px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
+
+/* =============================================
+   ICONS8 SF REGULAR
+============================================= */
+.i8 {
+  display: inline-block;
+  width: 1.2em; height: 1.2em;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  vertical-align: -0.2em;
+}
+.i8-lock { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/lock.png"); }
+.i8-dining { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/dining-room.png"); }
+.i8-dashboard { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/bar-chart.png"); }
+.i8-members { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/user-group-man-man.png"); }
+.i8-calendar { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/calendar.png"); }
+.i8-money { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/banknotes.png"); }
+.i8-settlement { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/money-bag.png"); }
+.i8-settings { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/settings.png"); }
+
+.i8-meal { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/meal.png"); }
+.i8-rate { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/combo-chart.png"); }
+.i8-bill { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/bill.png"); }
+
+.i8-edit { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/edit.png"); }
+.i8-refresh { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/recurring-appointment.png"); }
+.i8-copy { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/copy.png"); }
+.i8-camera { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/camera.png"); }
+.i8-plus { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/plus-math.png"); }
+.i8-close { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/multiply.png"); }
+
+.i8-elec { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/flash-on.png"); }
+.i8-wifi { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/wi-fi.png"); }
+.i8-gas { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/gas-industry.png"); }
+.i8-water { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/water.png"); }
+.i8-cart { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/shopping-cart.png"); }
+.i8-other { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/banknotes.png"); }
+
+.i8-smile { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/smiling.png"); }
+.i8-man { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/user-male.png"); }
+.i8-woman { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/user-female.png"); }
+.i8-user { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/user.png"); }
+.i8-boy { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/boy.png"); }
+.i8-girl { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/girl.png"); }
+.i8-beard { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/beard.png"); }
+.i8-blonde { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/blonde-man.png"); }
+.i8-student { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/student-male.png"); }
+.i8-mac { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/mac-client.png"); }
+.i8-fox { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/fox.png"); }
+.i8-bear { -webkit-mask-image: url("https://img.icons8.com/sf-regular/48/bear.png"); }

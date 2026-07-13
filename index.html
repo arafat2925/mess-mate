@@ -15,7 +15,7 @@
   <!-- Auth Screen -->
   <div id="authScreen" class="auth-screen">
     <div class="auth-card">
-      <div class="logo-icon" style="margin: 0 auto 16px; font-size: 32px; width: 48px; height: 48px;">🔒</div>
+      <div class="logo-icon" style="margin: 0 auto 16px; font-size: 32px; width: 48px; height: 48px;"><i class="i8 i8-lock"></i></div>
       <h2 style="margin-bottom: 8px; color: var(--t-hi); font-size: 1.1rem;">MessMate Access</h2>
       <p style="font-size: 0.8rem; color: var(--t-lo); margin-bottom: 24px;">Enter the flat PIN to unlock.</p>
       <input type="password" id="authPin" class="form-input" placeholder="PIN" style="text-align: center; letter-spacing: 0.2em; font-size: 1.2rem; margin-bottom: 16px;" />
@@ -26,7 +26,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        <div class="logo-icon">🍽️</div>
+        <div class="logo-icon"><i class="i8 i8-dining"></i></div>
         <div class="logo-text">
           <span class="logo-title">MessMate</span>
           <span class="logo-sub">Flat Meal Manager</span>
@@ -36,27 +36,27 @@
 
     <nav class="nav">
       <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
-        <span class="nav-icon">📊</span>
+        <span class="nav-icon"><i class="i8 i8-dashboard"></i></span>
         <span class="nav-label">Dashboard</span>
       </a>
       <a href="#" class="nav-item" data-page="members" id="nav-members">
-        <span class="nav-icon">👥</span>
+        <span class="nav-icon"><i class="i8 i8-members"></i></span>
         <span class="nav-label">Members</span>
       </a>
       <a href="#" class="nav-item" data-page="meals" id="nav-meals">
-        <span class="nav-icon">📅</span>
+        <span class="nav-icon"><i class="i8 i8-calendar"></i></span>
         <span class="nav-label">Meal Tracker</span>
       </a>
       <a href="#" class="nav-item" data-page="shopping" id="nav-shopping">
-        <span class="nav-icon">💵</span>
+        <span class="nav-icon"><i class="i8 i8-money"></i></span>
         <span class="nav-label">Money</span>
       </a>
       <a href="#" class="nav-item" data-page="settlement" id="nav-settlement">
-        <span class="nav-icon">💰</span>
+        <span class="nav-icon"><i class="i8 i8-settlement"></i></span>
         <span class="nav-label">Settlement</span>
       </a>
       <a href="#" class="nav-item" data-page="settings" id="nav-settings">
-        <span class="nav-icon">⚙️</span>
+        <span class="nav-icon"><i class="i8 i8-settings"></i></span>
         <span class="nav-label">Settings</span>
       </a>
     </nav>
@@ -84,41 +84,41 @@
           <p class="page-subtitle" id="dashboardSubtitle">Loading…</p>
         </div>
         <div class="header-actions">
-          <button class="btn btn-primary" id="quickMarkBtn">✏️ Mark Today's Meals</button>
+          <button class="btn btn-primary" id="quickMarkBtn"><i class="i8 i8-edit"></i> Mark Today's Meals</button>
         </div>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon">👥</div>
+          <div class="stat-icon"><i class="i8 i8-members"></i></div>
           <div class="stat-body">
             <div class="stat-value" id="statMembers">0</div>
             <div class="stat-label">Members</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">🍛</div>
+          <div class="stat-icon"><i class="i8 i8-meal"></i></div>
           <div class="stat-body">
             <div class="stat-value" id="statMeals">0</div>
             <div class="stat-label">Total Meals</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">📈</div>
+          <div class="stat-icon"><i class="i8 i8-rate"></i></div>
           <div class="stat-body">
             <div class="stat-value" id="statRate">৳0</div>
             <div class="stat-label">Meal Rate</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">💵</div>
+          <div class="stat-icon"><i class="i8 i8-money"></i></div>
           <div class="stat-body">
             <div class="stat-value" id="statFund">৳0</div>
             <div class="stat-label">Fund In</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">📄</div>
+          <div class="stat-icon"><i class="i8 i8-bill"></i></div>
           <div class="stat-body">
             <div class="stat-value" id="statBillsOut">৳0</div>
             <div class="stat-label">Bills Out</div>
@@ -268,9 +268,9 @@
           <p class="page-subtitle">Month-end calculation — who owes what</p>
         </div>
         <div class="header-actions">
-          <button class="btn btn-primary" id="recalcBtn">🔄 Recalculate</button>
-          <button class="btn btn-secondary" id="exportBtn">📋 Copy Report</button>
-          <button class="btn btn-secondary" id="exportImageBtn">📸 Image</button>
+          <button class="btn btn-primary" id="recalcBtn"><i class="i8 i8-refresh"></i> Recalculate</button>
+          <button class="btn btn-secondary" id="exportBtn"><i class="i8 i8-copy"></i> Copy Report</button>
+          <button class="btn btn-secondary" id="exportImageBtn"><i class="i8 i8-camera"></i> Image</button>
         </div>
       </div>
 
@@ -378,18 +378,18 @@
       <div class="form-group">
         <label class="form-label">Avatar</label>
         <div class="emoji-picker" id="emojiPicker">
-          <span class="emoji-opt selected" data-emoji="😊">😊</span>
-          <span class="emoji-opt" data-emoji="👨">👨</span>
-          <span class="emoji-opt" data-emoji="👩">👩</span>
-          <span class="emoji-opt" data-emoji="🧑">🧑</span>
-          <span class="emoji-opt" data-emoji="👦">👦</span>
-          <span class="emoji-opt" data-emoji="👧">👧</span>
-          <span class="emoji-opt" data-emoji="🧔">🧔</span>
-          <span class="emoji-opt" data-emoji="👱">👱</span>
-          <span class="emoji-opt" data-emoji="🎓">🎓</span>
-          <span class="emoji-opt" data-emoji="👨‍💻">👨‍💻</span>
-          <span class="emoji-opt" data-emoji="🦊">🦊</span>
-          <span class="emoji-opt" data-emoji="🐻">🐻</span>
+          <span class="emoji-opt selected" data-emoji='<i class="i8 i8-smile"></i>'><i class="i8 i8-smile"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-man"></i>'><i class="i8 i8-man"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-woman"></i>'><i class="i8 i8-woman"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-user"></i>'><i class="i8 i8-user"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-boy"></i>'><i class="i8 i8-boy"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-girl"></i>'><i class="i8 i8-girl"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-beard"></i>'><i class="i8 i8-beard"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-blonde"></i>'><i class="i8 i8-blonde"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-student"></i>'><i class="i8 i8-student"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-mac"></i>'><i class="i8 i8-man"></i>‍💻</span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-fox"></i>'><i class="i8 i8-fox"></i></span>
+          <span class="emoji-opt" data-emoji='<i class="i8 i8-bear"></i>'><i class="i8 i8-bear"></i></span>
         </div>
       </div>
     </div>
@@ -443,10 +443,10 @@
       <div class="form-group">
         <label class="form-label">Category</label>
         <div class="bill-cats" id="billCats">
-          <button type="button" class="cat-btn active" data-cat="Electricity">⚡ Electricity</button>
-          <button type="button" class="cat-btn" data-cat="WiFi">📶 WiFi</button>
-          <button type="button" class="cat-btn" data-cat="Gas">🔥 Gas</button>
-          <button type="button" class="cat-btn" data-cat="Water">💧 Water</button>
+          <button type="button" class="cat-btn active" data-cat="Electricity"><i class="i8 i8-elec"></i> Electricity</button>
+          <button type="button" class="cat-btn" data-cat="WiFi"><i class="i8 i8-wifi"></i> WiFi</button>
+          <button type="button" class="cat-btn" data-cat="Gas"><i class="i8 i8-gas"></i> Gas</button>
+          <button type="button" class="cat-btn" data-cat="Water"><i class="i8 i8-water"></i> Water</button>
           <button type="button" class="cat-btn" data-cat="Other">+ Other</button>
         </div>
       </div>

@@ -360,13 +360,13 @@ function refreshSubtitle() {
 /* =============================================
    MEMBERS
 ============================================= */
-let pickedEmoji = '😊';
+let pickedEmoji = '<i class="i8 i8-smile"></i>';
 
 document.getElementById('addMemberBtn').addEventListener('click', () => {
-  pickedEmoji = '😊';
+  pickedEmoji = '<i class="i8 i8-smile"></i>';
   document.getElementById('memberNameInput').value = '';
   document.querySelectorAll('.emoji-opt').forEach(e =>
-    e.classList.toggle('selected', e.dataset.emoji === '😊')
+    e.classList.toggle('selected', e.dataset.emoji === '<i class="i8 i8-smile"></i>')
   );
   openModal('addMemberModal');
   setTimeout(() => document.getElementById('memberNameInput').focus(), 80);
@@ -826,7 +826,7 @@ function renderShopping() {
 }
 
 function catIcon(cat) {
-  return { Electricity:'⚡', WiFi:'📶', Gas:'🔥', Water:'💧', Other:'💸' }[cat] || '💸';
+  return { Electricity:'<i class="i8 i8-elec"></i>', WiFi:'<i class="i8 i8-wifi"></i>', Gas:'<i class="i8 i8-gas"></i>', Water:'<i class="i8 i8-water"></i>', Other:'<i class="i8 i8-other"></i>' }[cat] || '<i class="i8 i8-other"></i>';
 }
 
 /* =============================================
@@ -1080,7 +1080,7 @@ function renderSpendSummary() {
   let items = [];
   
   if (te > 0) {
-    items.push({ name: 'Food & Groceries', emoji: '🛒', amount: te });
+    items.push({ name: 'Food & Groceries', emoji: '<i class="i8 i8-cart"></i>', amount: te });
   }
 
   // Group bills by title to prevent showing 5 entries for "Electricity" if entered separately
