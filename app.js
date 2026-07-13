@@ -571,12 +571,13 @@ function cycleMeal(cell) {
   // Current value: default is mealsAvail (ate everything)
   const current = (day.eaten[memberId] !== undefined) ? day.eaten[memberId] : avail;
 
-  // Toggle: mealsAvail ↔ 0
-  if (current === avail) {
-    day.eaten[memberId] = 0;
-  } else {
-    // Back to default (which equals avail)
+  // Cycle DOWN: mealsAvail → (mealsAvail-1) → 0 → mealsAvail (back to default)
+  let next = current - 1;
+  if (next < 0) {
+    // Back to default — remove override so it reads as mealsAvail
     delete day.eaten[memberId];
+  } else {
+    day.eaten[memberId] = next;
   }
   save();
   buildMealTable();
