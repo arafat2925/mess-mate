@@ -573,13 +573,16 @@ select.form-input option { background: var(--bg-2); }
   transform: translate(-50%, -50%);
   background: var(--bg-1); border: 1px solid var(--line-2);
   border-radius: var(--r); width: 90%; max-width: 420px;
+  max-height: calc(100dvh - 85px);
   z-index: 300; display: none;
   box-shadow: 0 8px 40px rgba(0,0,0,.6);
+  flex-direction: column;
 }
-.modal.open { display: block; animation: fade .15s ease; }
+.modal.open { display: flex; animation: fade .15s ease; }
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 18px; border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
 .modal-title  { font-weight: 600; font-size: 0.9rem; color: var(--t-hi); }
 .modal-close  {
@@ -588,10 +591,11 @@ select.form-input option { background: var(--bg-2); }
   border-radius: var(--r-sm); line-height: 1; transition: color var(--ease);
 }
 .modal-close:hover { color: var(--t-hi); }
-.modal-body   { padding: 16px 18px; }
+.modal-body   { padding: 16px 18px; overflow-y: auto; flex-shrink: 1; }
 .modal-footer {
   padding: 12px 18px; display: flex; gap: 8px;
   justify-content: flex-end; border-top: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
 /* =============================================
