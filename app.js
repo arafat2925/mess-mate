@@ -825,25 +825,29 @@ function renderMoneyTable(items, prefix) {
   }).join('');
   
   const collectedRow = items.map(item => {
-    const collected = Object.values(item.contributions).reduce((a,b)=>a+b, 0);
-    return `<td class="mt-collected">৳${collected.toLocaleString()}</td>`;
+    const memCollected = Object.values(item.contributions || {}).reduce((a,b)=>a+b, 0);
+    const fundCollected = item.fromFund || 0;
+    const totalColl = memCollected + fundCollected;
+    return `<td class="mt-collected">৳${totalColl.toLocaleString()}</td>`;
   }).join('');
   
   const spentRow = items.map(item => {
     return `<td class="mt-spent">৳${item.spent.toLocaleString()}</td>`;
   }).join('');
   
+  let runningBal = 0;
   const poolRow = items.map(item => {
-    const collected = Object.values(item.contributions).reduce((a,b)=>a+b, 0);
-    const diff = collected - item.spent;
-    const sign = diff >= 0 ? '+' : '−';
-    return `<td class="mt-pool">${sign}৳${Math.abs(diff).toLocaleString()}</td>`;
+    const memCollected = Object.values(item.contributions || {}).reduce((a,b)=>a+b, 0);
+    const diff = memCollected - item.spent;
+    runningBal += diff;
+    const cls = runningBal >= 0 ? 'bal-pos' : 'bal-neg';
+    return `<td class="mt-pool ${cls}">৳${Math.abs(runningBal).toLocaleString()}</td>`;
   }).join('');
   
   tfEl.innerHTML = `
     <tr><td>Total Collected</td>${collectedRow}</tr>
     <tr><td>Actually Spent</td>${spentRow}</tr>
-    <tr><td>Extra</td>${poolRow}</tr>
+    <tr><td>Fund Remaining</td>${poolRow}</tr>
   `;
   
   // Attach edit handlers
