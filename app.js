@@ -813,6 +813,15 @@ function renderMoneyTable(items, prefix) {
     </th>`).join('')}
   </tr>`;
   
+  const fundRowCells = items.map(item => {
+    const val = item.fromFund || 0;
+    return `<td>${val > 0 ? `৳${val.toLocaleString()}` : '<span style="color:var(--t-lo)">—</span>'}</td>`;
+  }).join('');
+  const fundRow = `<tr>
+    <td><span style="margin-right:6px">🏦</span>Fund Used</td>
+    ${fundRowCells}
+  </tr>`;
+  
   tbEl.innerHTML = db.members.map(m => {
     const cells = items.map(item => {
       const val = item.contributions[m.id] || 0;
@@ -822,7 +831,7 @@ function renderMoneyTable(items, prefix) {
       <td><span style="margin-right:6px">${m.emoji}</span>${esc(m.name)}</td>
       ${cells}
       </tr>`;
-  }).join('');
+  }).join('') + fundRow;
   
   const collectedRow = items.map(item => {
     const memCollected = Object.values(item.contributions || {}).reduce((a,b)=>a+b, 0);
