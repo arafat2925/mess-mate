@@ -1013,11 +1013,25 @@ function renderTodayMeals() {
   const todayDate = new Date();
   document.getElementById('dashTodayDate').textContent = todayDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
   
-  const badge = document.getElementById('dashTodayAvailBtn');
-  badge.textContent = `Default: ${avail} meals`;
+  const badge = document.getElementById('quickMarkBtn');
+  badge.innerHTML = `<i class="i8 i8-edit"></i> ` + (avail === 0 ? "Mark Meals" : `Today: ${avail} meal${avail>1?'s':''}`);
+  
+  if (avail > 0) {
+    badge.style.background = 'var(--ok)';
+    badge.style.color = '#000'; // Dark text for contrast on green
+    badge.style.borderColor = 'var(--ok)';
+  } else {
+    badge.style.background = '';
+    badge.style.color = '';
+    badge.style.borderColor = '';
+  }
   
   badge.onclick = () => {
-    const next = (day.mealsAvail + 1) % 3;
+    let next = 0;
+    if (avail === 0) next = 2;
+    else if (avail === 2) next = 1;
+    else next = 0;
+
     day.mealsAvail = next;
     if (next === 0) {
       day.eaten = {};
@@ -1034,7 +1048,7 @@ function renderTodayMeals() {
   if (!db.members.length) { el.innerHTML = '<div class="empty-state">No members yet.</div>'; return; }
   
   if (avail === 0) {
-    el.innerHTML = '<div class="empty-state" style="padding:40px 20px">Click the badge above to start marking meals for today.</div>';
+    el.innerHTML = '<div class="empty-state" style="padding:40px 20px">Click "Mark Meals" above to start marking meals for today.</div>';
     return;
   }
 
