@@ -663,10 +663,10 @@ function initMoneyModal(prefix, itemToEdit = null) {
     document.getElementById(`${prefix}TotalCollected`).textContent = `৳${(tot + fundVal).toLocaleString()}`;
   };
   
-  fundInput.addEventListener('input', () => {
+  fundInput.oninput = () => {
     if (parseFloat(fundInput.value) > availableFund) fundInput.value = availableFund;
     recalcTotal();
-  });
+  };
   listEl.querySelectorAll('input').forEach(inp => inp.addEventListener('input', recalcTotal));
   recalcTotal();
 }
