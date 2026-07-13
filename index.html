@@ -55,6 +55,10 @@
         <span class="nav-icon">💰</span>
         <span class="nav-label">Settlement</span>
       </a>
+      <a href="#" class="nav-item" data-page="settings" id="nav-settings">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Settings</span>
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -327,6 +331,34 @@
       </div>
     </section>
 
+    <!-- ==================== SETTINGS ==================== -->
+    <section class="page" id="page-settings">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Settings</h1>
+          <p class="page-subtitle">Security and configuration</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Change Flat PIN</h2>
+          <span class="card-hint">Cryptographically secures the flat data</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group" style="max-width: 300px;">
+            <label class="form-label">Current PIN</label>
+            <input type="password" id="setOldPin" class="form-input" placeholder="Enter current PIN">
+          </div>
+          <div class="form-group" style="max-width: 300px;">
+            <label class="form-label">New PIN</label>
+            <input type="password" id="setNewPin" class="form-input" placeholder="Enter new PIN">
+          </div>
+          <button id="changePinBtn" class="btn btn-primary">Update PIN & Re-encrypt</button>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ==================== MODALS ==================== -->
@@ -450,6 +482,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

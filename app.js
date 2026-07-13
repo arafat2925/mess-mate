@@ -63,13 +63,33 @@ function setSyncStatus(status) {
   }
 }
 
+let currentPin = localStorage.getItem('messmate_auth');
+
+function encryptPayload(data, pin) {
+  if (typeof CryptoJS === 'undefined') return data;
+  return { ciphertext: CryptoJS.AES.encrypt(JSON.stringify(data), pin).toString() };
+}
+
+function decryptPayload(payload, pin) {
+  if (!payload.ciphertext) return payload; // Fallback for unencrypted migration
+  try {
+    const bytes = CryptoJS.AES.decrypt(payload.ciphertext, pin);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    if (!decrypted) return null;
+    return JSON.parse(decrypted);
+  } catch (e) {
+    return null;
+  }
+}
+
 function save() {
   localStorage.setItem(DB_KEY, JSON.stringify(db));
-  if (!sbClient) return;
+  if (!sbClient || !currentPin) return;
   setSyncStatus('syncing');
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(async () => {
-    const { error } = await sbClient.from('messmate_state').upsert({ id: 1, payload: db });
+    const enc = encryptPayload(db, currentPin);
+    const { error } = await sbClient.from('messmate_state').upsert({ id: 1, payload: enc });
     if (error) {
       console.error('Supabase sync failed:', error);
       setSyncStatus('error');
@@ -80,11 +100,13 @@ function save() {
 }
 
 // Fetch remote state on startup and listen for real-time changes
-async function initRemoteSync() {
-  if (!sbClient) return;
+async function initRemoteSync(pin) {
+  if (!sbClient) return true;
   const { data, error } = await sbClient.from('messmate_state').select('payload').eq('id', 1).single();
   if (data && data.payload) {
-    db = data.payload;
+    const dec = decryptPayload(data.payload, pin);
+    if (!dec) return false; // Bad pin
+    db = dec;
     localStorage.setItem(DB_KEY, JSON.stringify(db));
     if (typeof renderPage === 'function' && typeof currentPage !== 'undefined') {
       renderPage(currentPage);
@@ -95,35 +117,57 @@ async function initRemoteSync() {
   sbClient.channel('custom-all-channel')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'messmate_state' }, (payload) => {
       if (payload.new && payload.new.payload) {
-        db = payload.new.payload;
-        localStorage.setItem(DB_KEY, JSON.stringify(db));
-        if (typeof renderPage === 'function' && typeof currentPage !== 'undefined') {
-          renderPage(currentPage);
+        const dec = decryptPayload(payload.new.payload, currentPin);
+        if (dec) {
+          db = dec;
+          localStorage.setItem(DB_KEY, JSON.stringify(db));
+          if (typeof renderPage === 'function' && typeof currentPage !== 'undefined') {
+            renderPage(currentPage);
+          }
         }
       }
     })
     .subscribe();
+  
+  return true;
 }
+
 /* =============================================
    AUTH GATE
 ============================================= */
-const AUTH_PIN = '2925';
 const authScreen = document.getElementById('authScreen');
 const authPinInput = document.getElementById('authPin');
 const authBtn = document.getElementById('authBtn');
 
-if (localStorage.getItem('messmate_auth') === AUTH_PIN) {
-  authScreen.style.display = 'none';
-  initRemoteSync();
-} else {
-  authBtn.addEventListener('click', () => {
-    if (authPinInput.value === AUTH_PIN) {
-      localStorage.setItem('messmate_auth', AUTH_PIN);
+async function boot() {
+  if (currentPin) {
+    const ok = await initRemoteSync(currentPin);
+    if (ok) {
+      authScreen.style.display = 'none';
+      return;
+    }
+    // If we are here, stored pin is invalid
+    localStorage.removeItem('messmate_auth');
+    currentPin = null;
+  }
+  
+  authScreen.style.display = 'flex';
+  
+  authBtn.addEventListener('click', async () => {
+    const pin = authPinInput.value;
+    if (!pin) return;
+    
+    authBtn.textContent = 'Verifying...';
+    const ok = await initRemoteSync(pin);
+    authBtn.textContent = 'Unlock';
+    
+    if (ok) {
+      currentPin = pin;
+      localStorage.setItem('messmate_auth', pin);
+      // Immediately encrypt and push to secure it if it was unencrypted
+      save(); 
       authScreen.style.opacity = '0';
-      setTimeout(() => {
-        authScreen.style.display = 'none';
-        initRemoteSync();
-      }, 300);
+      setTimeout(() => authScreen.style.display = 'none', 300);
     } else {
       authPinInput.style.borderColor = 'var(--err)';
       setTimeout(() => authPinInput.style.borderColor = 'var(--line)', 1000);
@@ -131,6 +175,7 @@ if (localStorage.getItem('messmate_auth') === AUTH_PIN) {
   });
   authPinInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
 }
+boot();
 
 const esc = s => (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 
@@ -266,7 +311,7 @@ document.querySelectorAll('[data-close]').forEach(btn =>
 /* =============================================
    NAVIGATION
 ============================================= */
-const PAGES = ['dashboard','members','meals','shopping','settlement'];
+const PAGES = ['dashboard','members','meals','shopping','settlement','settings'];
 let currentPage = 'dashboard';
 
 function navigate(page) {
@@ -1071,6 +1116,7 @@ function renderPage(page) {
     case 'meals':      renderMealTracker(); break;
     case 'shopping':   renderShopping(); break;
     case 'settlement': renderSettlement(); break;
+    case 'settings':   /* static page, no render needed */ break;
   }
 }
 
@@ -1088,6 +1134,33 @@ function fillMemberSelOpt(id) {
     `<option value="">— Common fund —</option>` +
     db.members.map(m => `<option value="${m.id}">${m.emoji} ${m.name}</option>`).join('');
 }
+
+/* =============================================
+   SETTINGS
+============================================= */
+document.getElementById('changePinBtn')?.addEventListener('click', () => {
+  const oldPin = document.getElementById('setOldPin').value;
+  const newPin = document.getElementById('setNewPin').value;
+  
+  if (oldPin !== currentPin) {
+    toast('Current PIN is incorrect', 'err');
+    return;
+  }
+  if (!newPin || newPin.length < 4) {
+    toast('New PIN must be at least 4 characters', 'err');
+    return;
+  }
+  
+  currentPin = newPin;
+  localStorage.setItem('messmate_auth', newPin);
+  
+  // Re-encrypt the DB and push to Supabase
+  save();
+  
+  document.getElementById('setOldPin').value = '';
+  document.getElementById('setNewPin').value = '';
+  toast('PIN updated & DB secured', 'ok');
+});
 
 /* =============================================
    BOOT
