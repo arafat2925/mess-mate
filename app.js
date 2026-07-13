@@ -867,6 +867,16 @@ function renderMoneyTable(items, prefix) {
 }
 
 function renderShopping() {
+  const contribs = totalContributions();
+  const spent = totalFoodExpenses() + totalExtraBills();
+  const rem = calculateFundBalance();
+  
+  document.getElementById('moneyStatFundIn').textContent = `৳${contribs.toLocaleString()}`;
+  document.getElementById('moneyStatExpense').textContent = `৳${spent.toLocaleString()}`;
+  const remEl = document.getElementById('moneyStatFundRem');
+  remEl.textContent = `৳${rem.toLocaleString()}`;
+  remEl.style.color = rem < 0 ? 'var(--err)' : 'inherit';
+
   renderMoneyTable(getMonth().bazaars, 'baz');
   renderMoneyTable(getMonth().bills, 'bill');
 }
