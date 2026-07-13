@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MessMate — Shared Flat Meal Manager</title>
-  <meta name="description" content="Manage your shared flat meals, track who ate, log shopping contributions and settle monthly expenses fairly." />
+  <meta name="description"
+    content="Manage your shared flat meals, track who ate, log shopping contributions and settle monthly expenses fairly." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
   <!-- Auth Screen -->
   <div id="authScreen" class="auth-screen">
     <div class="auth-card">
-      <div class="logo-icon" style="margin: 0 auto 16px; font-size: 32px; width: 48px; height: 48px;"><i class="i8 i8-lock"></i></div>
+      <div class="logo-icon" style="margin: 0 auto 16px; font-size: 32px; width: 48px; height: 48px;"><i
+          class="i8 i8-lock"></i></div>
       <h2 style="margin-bottom: 8px; color: var(--t-hi); font-size: 1.1rem;">MessMate Access</h2>
       <p style="font-size: 0.8rem; color: var(--t-lo); margin-bottom: 24px;">Enter the flat PIN to unlock.</p>
-      <input type="password" id="authPin" class="form-input" placeholder="PIN" style="text-align: center; letter-spacing: 0.2em; font-size: 1.2rem; margin-bottom: 16px;" />
-      <button id="authBtn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 10px;">Unlock</button>
+      <input type="password" id="authPin" class="form-input" placeholder="PIN"
+        style="text-align: center; letter-spacing: 0.2em; font-size: 1.2rem; margin-bottom: 16px;" />
+      <button id="authBtn" class="btn btn-primary"
+        style="width: 100%; justify-content: center; padding: 10px;">Unlock</button>
     </div>
   </div>
   <!-- Sidebar -->
@@ -183,7 +190,6 @@
         <div class="header-actions">
           <div class="meal-legend">
             <span class="legend-item"><span class="dot green"></span>Ate</span>
-            <span class="legend-item"><span class="dot yellow"></span>Partial</span>
             <span class="legend-item"><span class="dot red"></span>Skipped</span>
           </div>
           <div class="btn-group">
@@ -205,7 +211,8 @@
       </div>
 
       <div class="tracker-hint">
-        💡 Tap the <strong>1</strong> or <strong>2</strong> badge on each date header to set how many meals were available that day.
+        💡 Tap the <strong>1</strong> or <strong>2</strong> badge on each date header to set how many meals were
+        available that day.
         Then tap each person's cell to mark how many they ate.
       </div>
     </section>
@@ -233,7 +240,11 @@
             <table class="money-table">
               <thead id="bazTHead"></thead>
               <tbody id="bazTBody">
-                <tr><td><div class="empty-state">No shopping trips yet. Click "+ Shopping Trip" to add one.</div></td></tr>
+                <tr>
+                  <td>
+                    <div class="empty-state">No shopping trips yet. Click "+ Shopping Trip" to add one.</div>
+                  </td>
+                </tr>
               </tbody>
               <tfoot id="bazTFoot"></tfoot>
             </table>
@@ -251,7 +262,11 @@
             <table class="money-table">
               <thead id="billTHead"></thead>
               <tbody id="billTBody">
-                <tr><td><div class="empty-state">No extra bills yet. Click "+ Extra Bill" to add one.</div></td></tr>
+                <tr>
+                  <td>
+                    <div class="empty-state">No extra bills yet. Click "+ Extra Bill" to add one.</div>
+                  </td>
+                </tr>
               </tbody>
               <tfoot id="billTFoot"></tfoot>
             </table>
@@ -315,7 +330,11 @@
                 </tr>
               </thead>
               <tbody id="settlementTable">
-                <tr><td colspan="6"><div class="empty-state">Add members and record meals first.</div></td></tr>
+                <tr>
+                  <td colspan="6">
+                    <div class="empty-state">Add members and record meals first.</div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -420,9 +439,11 @@
       </div>
       <div class="form-group">
         <label class="form-label">Actually Spent (৳) *</label>
-        <input type="number" class="form-input" id="bazSpentInput" placeholder="Amount actually spent at store" min="0" />
+        <input type="number" class="form-input" id="bazSpentInput" placeholder="Amount actually spent at store"
+          min="0" />
       </div>
-      <div style="font-size:0.75rem; color:var(--t-lo);">Total Collected: <strong id="bazTotalCollected" style="color:var(--t-hi)">৳0</strong></div>
+      <div style="font-size:0.75rem; color:var(--t-lo);">Total Collected: <strong id="bazTotalCollected"
+          style="color:var(--t-hi)">৳0</strong></div>
     </div>
     <div class="modal-footer" style="justify-content: space-between;">
       <button class="btn btn-ghost" id="delBazBtn" style="color:#f87171; display:none">Delete</button>
@@ -443,7 +464,8 @@
       <div class="form-group">
         <label class="form-label">Category</label>
         <div class="bill-cats" id="billCats">
-          <button type="button" class="cat-btn active" data-cat="Electricity"><i class="i8 i8-elec"></i> Electricity</button>
+          <button type="button" class="cat-btn active" data-cat="Electricity"><i class="i8 i8-elec"></i>
+            Electricity</button>
           <button type="button" class="cat-btn" data-cat="WiFi"><i class="i8 i8-wifi"></i> WiFi</button>
           <button type="button" class="cat-btn" data-cat="Gas"><i class="i8 i8-gas"></i> Gas</button>
           <button type="button" class="cat-btn" data-cat="Water"><i class="i8 i8-water"></i> Water</button>
@@ -466,7 +488,8 @@
         <label class="form-label">Actually Spent (৳) *</label>
         <input type="number" class="form-input" id="billSpentInput" placeholder="Total bill amount" min="0" />
       </div>
-      <div style="font-size:0.75rem; color:var(--t-lo);">Total Collected: <strong id="billTotalCollected" style="color:var(--t-hi)">৳0</strong></div>
+      <div style="font-size:0.75rem; color:var(--t-lo);">Total Collected: <strong id="billTotalCollected"
+          style="color:var(--t-hi)">৳0</strong></div>
     </div>
     <div class="modal-footer" style="justify-content: space-between;">
       <button class="btn btn-ghost" id="delBillBtn" style="color:#f87171; display:none">Delete</button>
@@ -485,4 +508,5 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>
