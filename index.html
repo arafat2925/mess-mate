@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MessMate — Shared Flat Meal Manager</title>
+  <meta name="description" content="Manage your shared flat meals, track who ate, log shopping contributions and settle monthly expenses fairly." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">🍽️</div>
+        <div class="logo-text">
+          <span class="logo-title">MessMate</span>
+          <span class="logo-sub">Flat Meal Manager</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" data-page="members" id="nav-members">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">Members</span>
+      </a>
+      <a href="#" class="nav-item" data-page="meals" id="nav-meals">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Meal Tracker</span>
+      </a>
+      <a href="#" class="nav-item" data-page="shopping" id="nav-shopping">
+        <span class="nav-icon">💵</span>
+        <span class="nav-label">Money</span>
+      </a>
+      <a href="#" class="nav-item" data-page="settlement" id="nav-settlement">
+        <span class="nav-icon">💰</span>
+        <span class="nav-label">Settlement</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="month-selector">
+        <label>Active Month</label>
+        <select id="globalMonthSelect"></select>
+      </div>
+      <div class="sync-status" id="syncStatus">
+        <span class="sync-dot green"></span>
+        <span class="sync-text">Synced</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main" id="main">
+
+    <!-- ==================== DASHBOARD ==================== -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle" id="dashboardSubtitle">Loading…</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" id="quickMarkBtn">✏️ Mark Today's Meals</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-body">
+            <div class="stat-value" id="statMembers">0</div>
+            <div class="stat-label">Members</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🍛</div>
+          <div class="stat-body">
+            <div class="stat-value" id="statMeals">0</div>
+            <div class="stat-label">Total Meals</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-body">
+            <div class="stat-value" id="statRate">৳0</div>
+            <div class="stat-label">Meal Rate</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💵</div>
+          <div class="stat-body">
+            <div class="stat-value" id="statFund">৳0</div>
+            <div class="stat-label">Fund In</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📄</div>
+          <div class="stat-body">
+            <div class="stat-value" id="statBillsOut">৳0</div>
+            <div class="stat-label">Bills Out</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Today's Meals -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="dashTodayDate">Today</h2>
+              <span class="card-hint">Quick meal marking</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="dashTodayAvailBtn">Default: 2 meals</button>
+          </div>
+          <div class="card-body no-pad" id="dashTodayMeals">
+            <div class="empty-state">Loading...</div>
+          </div>
+        </div>
+
+        <!-- Spend Summary -->
+        <div class="card">
+          <div class="card-header" style="background:var(--bg-2)">
+            <div>
+              <h2 class="card-title">Spend Summary</h2>
+              <span class="card-hint">Total expenses this month</span>
+            </div>
+            <div class="card-badge" id="dashTotalSpentBadge">৳0</div>
+          </div>
+          <div class="card-body no-pad" id="dashSpendSummary">
+            <div class="empty-state">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MEMBERS ==================== -->
+    <section class="page" id="page-members">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Members</h1>
+          <p class="page-subtitle">People living in the flat</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" id="addMemberBtn">+ Add Member</button>
+        </div>
+      </div>
+      <div class="members-grid" id="membersGrid">
+        <div class="empty-state large">No members yet. Click "Add Member" to get started.</div>
+      </div>
+    </section>
+
+    <!-- ==================== MEAL TRACKER ==================== -->
+    <section class="page" id="page-meals">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Meal Tracker</h1>
+          <p class="page-subtitle" id="mealSubtitle">Tap a cell to mark meals eaten</p>
+        </div>
+        <div class="header-actions">
+          <div class="meal-legend">
+            <span class="legend-item"><span class="dot green"></span>Ate</span>
+            <span class="legend-item"><span class="dot yellow"></span>Partial</span>
+            <span class="legend-item"><span class="dot red"></span>Skipped</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-ghost" id="prevMonthBtn">&#8249; Prev</button>
+            <button class="btn btn-sm btn-ghost" id="nextMonthBtn">Next &#8250;</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card tracker-card">
+        <div class="card-body no-pad">
+          <div class="meal-table-scroll">
+            <table class="meal-table" id="mealTable">
+              <thead id="mealTHead"></thead>
+              <tbody id="mealTBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tracker-hint">
+        💡 Tap the <strong>1</strong> or <strong>2</strong> badge on each date header to set how many meals were available that day.
+        Then tap each person's cell to mark how many they ate.
+      </div>
+    </section>
+
+    <!-- ==================== MONEY ==================== -->
+    <section class="page" id="page-shopping">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Money</h1>
+          <p class="page-subtitle">Shopping trips &amp; Extra Bills</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="addBillBtn">+ Extra Bill</button>
+          <button class="btn btn-primary" id="addBazaarBtn">+ Shopping Trip</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Shopping Trips (Bazaars)</h2>
+          <span class="card-hint">Contributes to Meal Rate</span>
+        </div>
+        <div class="card-body no-pad">
+          <div class="meal-table-scroll">
+            <table class="money-table">
+              <thead id="bazTHead"></thead>
+              <tbody id="bazTBody">
+                <tr><td><div class="empty-state">No shopping trips yet. Click "+ Shopping Trip" to add one.</div></td></tr>
+              </tbody>
+              <tfoot id="bazTFoot"></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">Extra Bills</h2>
+          <span class="card-hint">Split equally, separate from meals</span>
+        </div>
+        <div class="card-body no-pad">
+          <div class="meal-table-scroll">
+            <table class="money-table">
+              <thead id="billTHead"></thead>
+              <tbody id="billTBody">
+                <tr><td><div class="empty-state">No extra bills yet. Click "+ Extra Bill" to add one.</div></td></tr>
+              </tbody>
+              <tfoot id="billTFoot"></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SETTLEMENT ==================== -->
+    <section class="page" id="page-settlement">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Settlement</h1>
+          <p class="page-subtitle">Month-end calculation — who owes what</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" id="recalcBtn">🔄 Recalculate</button>
+          <button class="btn btn-secondary" id="exportBtn">📋 Copy Report</button>
+          <button class="btn btn-secondary" id="exportImageBtn">📸 Image</button>
+        </div>
+      </div>
+
+      <div class="settlement-summary">
+        <div class="summary-card">
+          <div class="sum-label">Food Expenses</div>
+          <div class="sum-value" id="sumTotalSpent">৳0</div>
+        </div>
+        <div class="summary-card">
+          <div class="sum-label">Total Meals</div>
+          <div class="sum-value" id="sumTotalMeals">0</div>
+        </div>
+        <div class="summary-card highlight">
+          <div class="sum-label">Meal Rate</div>
+          <div class="sum-value" id="sumMealRate">৳0</div>
+        </div>
+        <div class="summary-card">
+          <div class="sum-label">Extra Bills</div>
+          <div class="sum-value" id="sumExtraBills">৳0</div>
+        </div>
+        <div class="summary-card">
+          <div class="sum-label">Total Contributed</div>
+          <div class="sum-value" id="sumTotalContrib">৳0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Settlement Breakdown</h2>
+        </div>
+        <div class="card-body no-pad">
+          <div class="meal-table-scroll">
+            <table class="settlement-table">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding-left:16px;">Member</th>
+                  <th>Contributed</th>
+                  <th>Meals</th>
+                  <th>Bills</th>
+                  <th>Total Cost</th>
+                  <th style="text-align:right;padding-right:16px;">Balance</th>
+                </tr>
+              </thead>
+              <tbody id="settlementTable">
+                <tr><td colspan="6"><div class="empty-state">Add members and record meals first.</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="txCard" style="display:none">
+        <div class="card-header">
+          <h2 class="card-title">Suggested Payments</h2>
+          <span class="card-hint">Minimum transactions to settle up</span>
+        </div>
+        <div class="card-body" id="txList"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+  <div class="modal-overlay" id="modalOverlay"></div>
+
+  <!-- Add Member Modal -->
+  <div class="modal" id="addMemberModal">
+    <div class="modal-header">
+      <h3 class="modal-title">Add Member</h3>
+      <button class="modal-close" data-close="addMemberModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input type="text" class="form-input" id="memberNameInput" placeholder="e.g. Rafiq" maxlength="30" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Avatar</label>
+        <div class="emoji-picker" id="emojiPicker">
+          <span class="emoji-opt selected" data-emoji="😊">😊</span>
+          <span class="emoji-opt" data-emoji="👨">👨</span>
+          <span class="emoji-opt" data-emoji="👩">👩</span>
+          <span class="emoji-opt" data-emoji="🧑">🧑</span>
+          <span class="emoji-opt" data-emoji="👦">👦</span>
+          <span class="emoji-opt" data-emoji="👧">👧</span>
+          <span class="emoji-opt" data-emoji="🧔">🧔</span>
+          <span class="emoji-opt" data-emoji="👱">👱</span>
+          <span class="emoji-opt" data-emoji="🎓">🎓</span>
+          <span class="emoji-opt" data-emoji="👨‍💻">👨‍💻</span>
+          <span class="emoji-opt" data-emoji="🦊">🦊</span>
+          <span class="emoji-opt" data-emoji="🐻">🐻</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close="addMemberModal">Cancel</button>
+      <button class="btn btn-primary" id="saveMemberBtn">Add Member</button>
+    </div>
+  </div>
+
+  <!-- Add Shopping Trip (Bazaar) Modal -->
+  <div class="modal" id="addBazaarModal">
+    <div class="modal-header">
+      <h3 class="modal-title">New Shopping Trip</h3>
+      <button class="modal-close" data-close="addBazaarModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input type="text" class="form-input" id="bazTitleInput" placeholder="e.g. Weekly Groceries" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="bazDateInput" />
+      </div>
+      <div class="form-group" style="margin-top:20px; border-top:1px solid var(--line); padding-top:16px;">
+        <label class="form-label">Who contributed how much?</label>
+        <div id="bazMembersList"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Actually Spent (৳) *</label>
+        <input type="number" class="form-input" id="bazSpentInput" placeholder="Amount actually spent at store" min="0" />
+      </div>
+      <div style="font-size:0.75rem; color:var(--t-lo);">Total Collected: <strong id="bazTotalCollected" style="color:var(--t-hi)">৳0</strong></div>
+    </div>
+    <div class="modal-footer" style="justify-content: space-between;">
+      <button class="btn btn-ghost" id="delBazBtn" style="color:#f87171; display:none">Delete</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" data-close="addBazaarModal">Cancel</button>
+        <button class="btn btn-primary" id="saveBazBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Extra Bill Modal -->
+  <div class="modal" id="addBillModal">
+    <div class="modal-header">
+      <h3 class="modal-title">New Extra Bill</h3>
+      <button class="modal-close" data-close="addBillModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <div class="bill-cats" id="billCats">
+          <button type="button" class="cat-btn active" data-cat="Electricity">⚡ Electricity</button>
+          <button type="button" class="cat-btn" data-cat="WiFi">📶 WiFi</button>
+          <button type="button" class="cat-btn" data-cat="Gas">🔥 Gas</button>
+          <button type="button" class="cat-btn" data-cat="Water">💧 Water</button>
+          <button type="button" class="cat-btn" data-cat="Other">+ Other</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input type="text" class="form-input" id="billTitleInput" placeholder="e.g. Electricity — July" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="billDateInput" />
+      </div>
+      <div class="form-group" style="margin-top:20px; border-top:1px solid var(--line); padding-top:16px;">
+        <label class="form-label">Who contributed how much?</label>
+        <div id="billMembersList"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Actually Spent (৳) *</label>
+        <input type="number" class="form-input" id="billSpentInput" placeholder="Total bill amount" min="0" />
+      </div>
+      <div style="font-size:0.75rem; color:var(--t-lo);">Total Collected: <strong id="billTotalCollected" style="color:var(--t-hi)">৳0</strong></div>
+    </div>
+    <div class="modal-footer" style="justify-content: space-between;">
+      <button class="btn btn-ghost" id="delBillBtn" style="color:#f87171; display:none">Delete</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" data-close="addBillModal">Cancel</button>
+        <button class="btn btn-primary" id="saveBillBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
