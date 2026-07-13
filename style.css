@@ -672,6 +672,11 @@ select.form-input option { background: var(--bg-2); }
   .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
   .header-actions { width: 100%; justify-content: space-between; }
   .btn { padding: 8px 12px; font-size: 0.85rem; }
+  
+  /* Touch target expansions for Meal Tracker */
+  .meal-cell { width: 44px; height: 44px; font-size: 1rem; }
+  .day-th { min-width: 46px; width: 46px; }
+  .meals-avail { width: 24px; height: 24px; font-size: 0.75rem; margin: 0 auto; }
 }
 
 /* =============================================
