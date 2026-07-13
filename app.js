@@ -1093,9 +1093,13 @@ function renderSpendSummary() {
 
   let items = [];
   
-  if (te > 0) {
-    items.push({ name: 'Food & Groceries', emoji: '<i class="i8 i8-cart"></i>', amount: te });
-  }
+  const bazGroups = {};
+  getMonth().bazaars.forEach(b => {
+    const t = b.title || 'Shopping Trip';
+    if (!bazGroups[t]) bazGroups[t] = { name: t, emoji: '<i class="i8 i8-cart"></i>', amount: 0 };
+    bazGroups[t].amount += b.spent;
+  });
+  Object.values(bazGroups).forEach(g => items.push(g));
 
   // Group bills by title to prevent showing 5 entries for "Electricity" if entered separately
   const billGroups = {};
