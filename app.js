@@ -104,7 +104,33 @@ async function initRemoteSync() {
     })
     .subscribe();
 }
-initRemoteSync();
+/* =============================================
+   AUTH GATE
+============================================= */
+const AUTH_PIN = '2925';
+const authScreen = document.getElementById('authScreen');
+const authPinInput = document.getElementById('authPin');
+const authBtn = document.getElementById('authBtn');
+
+if (localStorage.getItem('messmate_auth') === AUTH_PIN) {
+  authScreen.style.display = 'none';
+  initRemoteSync();
+} else {
+  authBtn.addEventListener('click', () => {
+    if (authPinInput.value === AUTH_PIN) {
+      localStorage.setItem('messmate_auth', AUTH_PIN);
+      authScreen.style.opacity = '0';
+      setTimeout(() => {
+        authScreen.style.display = 'none';
+        initRemoteSync();
+      }, 300);
+    } else {
+      authPinInput.style.borderColor = 'var(--err)';
+      setTimeout(() => authPinInput.style.borderColor = 'var(--line)', 1000);
+    }
+  });
+  authPinInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
+}
 
 const esc = s => (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 

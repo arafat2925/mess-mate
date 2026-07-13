@@ -647,3 +647,19 @@ select.form-input option { background: var(--bg-2); }
 .sync-dot.yellow { background: var(--warn); color: var(--warn); }
 .sync-dot.red { background: var(--err); color: var(--err); }
 .sync-text { font-size: 0.65rem; color: var(--t-lo); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+
+/* =============================================
+   AUTH SCREEN
+============================================= */
+.auth-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg); display: flex;
+  align-items: center; justify-content: center;
+  transition: opacity 0.3s ease;
+}
+.auth-card {
+  background: var(--bg-1); padding: 32px;
+  border-radius: var(--r); border: 1px solid var(--line);
+  text-align: center; width: 90%; max-width: 320px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
