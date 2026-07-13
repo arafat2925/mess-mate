@@ -435,7 +435,16 @@
         <input type="date" class="form-input" id="bazDateInput" />
       </div>
       <div class="form-group" style="margin-top:20px; border-top:1px solid var(--line); padding-top:16px;">
-        <label class="form-label">Who contributed how much?</label>
+        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Who contributed how much?</span>
+          <span id="bazAvailableFundTxt" style="font-size:0.7rem; color:var(--t-lo); font-weight:normal;"></span>
+        </label>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding-bottom:12px; border-bottom:1px dashed var(--line);">
+          <span style="font-size:0.85rem; color:var(--t-hi);">From Fund</span>
+          <div class="input-prefix" style="width:100px;">
+            <span>৳</span><input type="number" class="form-input baz-contrib-input" id="bazFundInput" min="0" placeholder="0" />
+          </div>
+        </div>
         <div id="bazMembersList"></div>
       </div>
       <div class="form-group">
@@ -482,7 +491,16 @@
         <input type="date" class="form-input" id="billDateInput" />
       </div>
       <div class="form-group" style="margin-top:20px; border-top:1px solid var(--line); padding-top:16px;">
-        <label class="form-label">Who contributed how much?</label>
+        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Who contributed how much?</span>
+          <span id="billAvailableFundTxt" style="font-size:0.7rem; color:var(--t-lo); font-weight:normal;"></span>
+        </label>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding-bottom:12px; border-bottom:1px dashed var(--line);">
+          <span style="font-size:0.85rem; color:var(--t-hi);">From Fund</span>
+          <div class="input-prefix" style="width:100px;">
+            <span>৳</span><input type="number" class="form-input bill-contrib-input" id="billFundInput" min="0" placeholder="0" />
+          </div>
+        </div>
         <div id="billMembersList"></div>
       </div>
       <div class="form-group">

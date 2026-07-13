@@ -600,6 +600,27 @@ function shiftMonth(dir) {
    MONEY & SHOPPING
 ============================================= */
 
+function calculateFundBalance(excludeBazaarId = null, excludeBillId = null) {
+  let totContrib = 0;
+  let totSpent = 0;
+  const mo = getMonth();
+  
+  mo.bazaars.forEach(b => {
+    if (b.id !== excludeBazaarId) {
+      totSpent += b.spent;
+      Object.values(b.contributions || {}).forEach(v => totContrib += v);
+    }
+  });
+  mo.bills.forEach(b => {
+    if (b.id !== excludeBillId) {
+      totSpent += b.spent;
+      Object.values(b.contributions || {}).forEach(v => totContrib += v);
+    }
+  });
+  
+  return totContrib - totSpent;
+}
+
 // Modal initialization helper
 function initMoneyModal(prefix, itemToEdit = null) {
   document.getElementById(`${prefix}TitleInput`).value = itemToEdit ? itemToEdit.title : '';
@@ -617,12 +638,35 @@ function initMoneyModal(prefix, itemToEdit = null) {
     </div>`;
   }).join('');
   
+  const fundInput = document.getElementById(`${prefix}FundInput`);
+  const fundTxt = document.getElementById(`${prefix}AvailableFundTxt`);
+  
+  const excludeBazaarId = prefix === 'baz' && itemToEdit ? itemToEdit.id : null;
+  const excludeBillId = prefix === 'bill' && itemToEdit ? itemToEdit.id : null;
+  
+  const availableFund = calculateFundBalance(excludeBazaarId, excludeBillId);
+  
+  fundTxt.textContent = `(Available: ৳${availableFund.toFixed(0)})`;
+  if (availableFund <= 0) {
+    fundInput.value = '';
+    fundInput.disabled = true;
+  } else {
+    fundInput.disabled = false;
+    fundInput.max = availableFund;
+    fundInput.value = (itemToEdit && itemToEdit.fromFund) ? itemToEdit.fromFund : '';
+  }
+  
   const recalcTotal = () => {
     let tot = 0;
     listEl.querySelectorAll('input').forEach(i => tot += parseFloat(i.value) || 0);
-    document.getElementById(`${prefix}TotalCollected`).textContent = `৳${tot.toLocaleString()}`;
+    const fundVal = parseFloat(fundInput.value) || 0;
+    document.getElementById(`${prefix}TotalCollected`).textContent = `৳${(tot + fundVal).toLocaleString()}`;
   };
   
+  fundInput.addEventListener('input', () => {
+    if (parseFloat(fundInput.value) > availableFund) fundInput.value = availableFund;
+    recalcTotal();
+  });
   listEl.querySelectorAll('input').forEach(inp => inp.addEventListener('input', recalcTotal));
   recalcTotal();
 }
@@ -653,14 +697,15 @@ document.getElementById('saveBazBtn').addEventListener('click', (e) => {
   if (isNaN(spent) || spent < 0) { toast('Enter a valid spent amount', 'err'); return; }
   
   const contributions = getContributionsFromModal('baz');
+  const fromFund = parseFloat(document.getElementById('bazFundInput').value) || 0;
   const editId = e.target.dataset.editId;
   const mo = getMonth();
   
   if (editId) {
     const idx = mo.bazaars.findIndex(b => b.id === editId);
-    if (idx > -1) mo.bazaars[idx] = { ...mo.bazaars[idx], title, date, spent, contributions };
+    if (idx > -1) mo.bazaars[idx] = { ...mo.bazaars[idx], title, date, spent, contributions, fromFund };
   } else {
-    mo.bazaars.push({ id: uid(), title, date, spent, contributions });
+    mo.bazaars.push({ id: uid(), title, date, spent, contributions, fromFund });
   }
   
   save();
@@ -714,14 +759,15 @@ document.getElementById('saveBillBtn').addEventListener('click', (e) => {
   if (isNaN(spent) || spent < 0) { toast('Enter a valid spent amount', 'err'); return; }
   
   const contributions = getContributionsFromModal('bill');
+  const fromFund = parseFloat(document.getElementById('billFundInput').value) || 0;
   const editId = e.target.dataset.editId;
   const mo = getMonth();
   
   if (editId) {
     const idx = mo.bills.findIndex(b => b.id === editId);
-    if (idx > -1) mo.bills[idx] = { ...mo.bills[idx], cat: pickedCat, title, date, spent, contributions };
+    if (idx > -1) mo.bills[idx] = { ...mo.bills[idx], cat: pickedCat, title, date, spent, contributions, fromFund };
   } else {
-    mo.bills.push({ id: uid(), cat: pickedCat, title, date, spent, contributions });
+    mo.bills.push({ id: uid(), cat: pickedCat, title, date, spent, contributions, fromFund });
   }
   
   save();
