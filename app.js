@@ -82,13 +82,22 @@ function decryptPayload(payload, pin) {
   }
 }
 
+let syncChannel = null;
+
 function save() {
   localStorage.setItem(DB_KEY, JSON.stringify(db));
   if (!sbClient || !currentPin) return;
   setSyncStatus('syncing');
   clearTimeout(_saveTimer);
+  
+  const enc = encryptPayload(db, currentPin);
+  
+  // Broadcast optimistically for zero-config realtime between clients
+  if (syncChannel) {
+    syncChannel.send({ type: 'broadcast', event: 'state_update', payload: enc });
+  }
+
   _saveTimer = setTimeout(async () => {
-    const enc = encryptPayload(db, currentPin);
     const { error } = await sbClient.from('messmate_state').upsert({ id: 1, payload: enc });
     if (error) {
       console.error('Supabase sync failed:', error);
@@ -113,19 +122,26 @@ async function initRemoteSync(pin) {
     }
   }
 
-  // Bind Postgres changes listener
-  sbClient.channel('custom-all-channel')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'messmate_state' }, (payload) => {
-      if (payload.new && payload.new.payload) {
-        const dec = decryptPayload(payload.new.payload, currentPin);
-        if (dec) {
-          db = dec;
-          localStorage.setItem(DB_KEY, JSON.stringify(db));
-          if (typeof renderPage === 'function' && typeof currentPage !== 'undefined') {
-            renderPage(currentPage);
-          }
-        }
+  const handleUpdate = (encPayload) => {
+    if (!encPayload) return;
+    const dec = decryptPayload(encPayload, currentPin);
+    if (dec) {
+      db = dec;
+      localStorage.setItem(DB_KEY, JSON.stringify(db));
+      if (typeof renderPage === 'function' && typeof currentPage !== 'undefined') {
+        renderPage(currentPage);
       }
+    }
+  };
+
+  // Bind both Postgres changes and Ephemeral Broadcasts
+  syncChannel = sbClient.channel('messmate-sync');
+  syncChannel
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'messmate_state' }, (payload) => {
+      if (payload.new) handleUpdate(payload.new.payload);
+    })
+    .on('broadcast', { event: 'state_update' }, (payload) => {
+      if (payload.payload) handleUpdate(payload.payload);
     })
     .subscribe();
   
@@ -202,7 +218,10 @@ function daysInMonth(key) {
 function padDate(y, m, d) {
   return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 }
-function todayStr() { return new Date().toISOString().slice(0,10); }
+function todayStr() {
+  const d = new Date();
+  return padDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+}
 
 function getMonth() {
   if (!db.months[activeMonthKey]) {
@@ -238,13 +257,12 @@ function memberMealCount(memberId) {
 
   for (let d = 1; d <= daysInMonth(activeMonthKey); d++) {
     const ds = padDate(y, m, d);
-    if (ds > today) break;
-    if (ds < joinDate) continue; // Do not charge for meals before joining
-
     const day = mo.days[ds];
     if (!day || day.mealsAvail === 0) continue; // day not configured — skip
-    // Default = mealsAvail (everyone ate unless overridden)
-    const ate = (day.eaten[memberId] !== undefined) ? day.eaten[memberId] : day.mealsAvail;
+    
+    // Default: mealsAvail for active members, 0 for days before they joined
+    const defaultAte = (ds < joinDate) ? 0 : day.mealsAvail;
+    const ate = (day.eaten[memberId] !== undefined) ? day.eaten[memberId] : defaultAte;
     total += ate;
   }
   return total;
@@ -360,13 +378,13 @@ function refreshSubtitle() {
 /* =============================================
    MEMBERS
 ============================================= */
-let pickedEmoji = '<i class="i8 i8-smile"></i>';
+let pickedEmoji = '😀';
 
 document.getElementById('addMemberBtn').addEventListener('click', () => {
-  pickedEmoji = '<i class="i8 i8-smile"></i>';
+  pickedEmoji = '😀';
   document.getElementById('memberNameInput').value = '';
   document.querySelectorAll('.emoji-opt').forEach(e =>
-    e.classList.toggle('selected', e.dataset.emoji === '<i class="i8 i8-smile"></i>')
+    e.classList.toggle('selected', e.dataset.emoji === '😀')
   );
   openModal('addMemberModal');
   setTimeout(() => document.getElementById('memberNameInput').focus(), 80);
@@ -390,7 +408,9 @@ document.getElementById('saveMemberBtn').addEventListener('click', () => {
   if (db.members.find(m => m.name.toLowerCase() === name.toLowerCase())) {
     toast('Name already exists', 'err'); return;
   }
-  db.members.push({ id: uid(), name, emoji: pickedEmoji, joinedAt: new Date().toISOString() });
+  const d = new Date();
+  const localJoined = padDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  db.members.push({ id: uid(), name, emoji: pickedEmoji, joinedAt: localJoined });
   save();
   closeModal('addMemberModal');
   toast(`${name} added`, 'ok');
@@ -453,7 +473,6 @@ function buildMealTable() {
   for (let d = 1; d <= days; d++) {
     const ds = padDate(y, m, d);
     const isTd = ds === today;
-    const future = ds > today;
     const wk = new Date(y, m-1, d).toLocaleDateString('en-US',{weekday:'short'}).slice(0,2);
 
     const dayData = mo.days[ds];
@@ -469,7 +488,7 @@ function buildMealTable() {
     hRow += `<th class="day-th${isTd ? ' today-col' : ''}">
       <span class="day-num">${d}</span>
       <span class="day-wk">${wk}</span>
-      ${!future ? `<span class="${maCls}" data-date="${ds}" data-avail="${avail}" title="${maTip}">${avail}</span>` : '<span style="opacity:.15;font-size:.6rem">·</span>'}
+      <span class="${maCls}" data-date="${ds}" data-avail="${avail}" title="${maTip}">${avail}</span>
     </th>`;
   }
   hRow += `<th class="sum-th">Meals</th></tr>`;
@@ -486,15 +505,10 @@ function buildMealTable() {
   db.members.forEach(member => {
     let cells = '';
     let mealTotal = 0;
+    const joinDate = member.joinedAt ? member.joinedAt.slice(0, 10) : '0000-00-00';
 
     for (let d = 1; d <= days; d++) {
       const ds = padDate(y, m, d);
-      const future = ds > today;
-
-      if (future) {
-        cells += `<td><div class="meal-cell mc-future"></div></td>`;
-        continue;
-      }
 
       const dayData = mo.days[ds];
       const avail = dayData ? dayData.mealsAvail : 0;
@@ -505,8 +519,9 @@ function buildMealTable() {
         continue;
       }
 
-      // Default = mealsAvail (everyone ate unless explicitly overridden)
-      const ate = (dayData.eaten[member.id] !== undefined) ? dayData.eaten[member.id] : avail;
+      // Default = mealsAvail for active members, 0 if day is before they joined
+      const defaultAte = (ds < joinDate) ? 0 : avail;
+      const ate = (dayData.eaten[member.id] !== undefined) ? dayData.eaten[member.id] : defaultAte;
       mealTotal += ate;
 
       let cellCls = '';
@@ -568,13 +583,17 @@ function cycleMeal(cell) {
   if (!avail) return; // day not configured, ignore clicks
   const day = getDay(ds);
 
-  // Current value: default is mealsAvail (ate everything)
-  const current = (day.eaten[memberId] !== undefined) ? day.eaten[memberId] : avail;
+  const mem = db.members.find(x => x.id === memberId);
+  const joinDate = mem && mem.joinedAt ? mem.joinedAt.slice(0, 10) : '0000-00-00';
+  const defaultAte = (ds < joinDate) ? 0 : avail;
 
-  // Cycle DOWN: mealsAvail → (mealsAvail-1) → 0 → mealsAvail (back to default)
+  const current = (day.eaten[memberId] !== undefined) ? day.eaten[memberId] : defaultAte;
+
   let next = current - 1;
-  if (next < 0) {
-    // Back to default — remove override so it reads as mealsAvail
+  if (next < 0) next = avail; // Wrap around to avail
+
+  if (next === defaultAte) {
+    // Back to default — remove override
     delete day.eaten[memberId];
   } else {
     day.eaten[memberId] = next;
@@ -844,19 +863,18 @@ function renderMoneyTable(items, prefix) {
     return `<td class="mt-spent">৳${item.spent.toLocaleString()}</td>`;
   }).join('');
   
-  let runningBal = 0;
   const poolRow = items.map(item => {
     const memCollected = Object.values(item.contributions || {}).reduce((a,b)=>a+b, 0);
     const diff = memCollected - item.spent;
-    runningBal += diff;
-    const cls = runningBal >= 0 ? 'bal-pos' : 'bal-neg';
-    return `<td class="mt-pool ${cls}">৳${Math.abs(runningBal).toLocaleString()}</td>`;
+    const cls = diff >= 0 ? 'bal-pos' : 'bal-neg';
+    const sign = diff > 0 ? '+' : diff < 0 ? '−' : '';
+    return `<td class="mt-pool ${cls}">${sign}৳${Math.abs(diff).toLocaleString()}</td>`;
   }).join('');
   
   tfEl.innerHTML = `
     <tr><td>Total Collected</td>${collectedRow}</tr>
     <tr><td>Actually Spent</td>${spentRow}</tr>
-    <tr><td>Fund Remaining</td>${poolRow}</tr>
+    <tr><td>Net (Trip/Bill)</td>${poolRow}</tr>
   `;
   
   // Attach edit handlers
@@ -1070,7 +1088,7 @@ function renderDashStats() {
   document.getElementById('statRate').textContent = rate ? `৳${rate.toFixed(2)}` : '৳0';
   
   document.getElementById('statFund').textContent = `৳${totalContributions().toLocaleString()}`;
-  document.getElementById('statBillsOut').textContent = `৳${totalExtraBills().toLocaleString()}`;
+  document.getElementById('statTotalSpent').textContent = `৳${(totalFoodExpenses() + totalExtraBills()).toLocaleString()}`;
 }
 
 function renderTodayMeals() {
@@ -1096,17 +1114,16 @@ function renderTodayMeals() {
   }
   
   badge.onclick = () => {
-    let next = 0;
-    if (avail === 0) next = 2;
-    else if (avail === 2) next = 1;
-    else next = 0;
+    const next = (avail + 1) % 3;
 
     day.mealsAvail = next;
     if (next === 0) {
       day.eaten = {};
     } else {
       db.members.forEach(mem => {
-        if (day.eaten[mem.id] !== undefined && day.eaten[mem.id] > next) delete day.eaten[mem.id];
+        if (day.eaten[mem.id] !== undefined && day.eaten[mem.id] > next) {
+          delete day.eaten[mem.id];
+        }
       });
     }
     save();
